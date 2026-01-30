@@ -55,7 +55,8 @@ def main() -> None:
     # Read P2P configuration from environment variables.  A default
     # port of 9000 is used if ``P2P_PORT`` is not set.  The
     # ``BOOTSTRAP_PEERS`` variable should contain a comma separated
-    # list of ``host:port`` entries.
+    # list of ``host:port`` entries. ``ELMNET_MODE`` switches between
+    # local swarm and live internet mode.
     p2p_port_str = os.environ.get('P2P_PORT', '9000')
     try:
         p2p_port = int(p2p_port_str)
@@ -65,6 +66,17 @@ def main() -> None:
     bootstrap_peers: list[str] = []
     if bootstrap_csv:
         bootstrap_peers = [p.strip() for p in bootstrap_csv.split(',') if p.strip()]
+    mode = os.environ.get('ELMNET_MODE', 'local')
+    capabilities_csv = os.environ.get('P2P_CAPABILITIES', '')
+    services_csv = os.environ.get('P2P_SERVICES', '')
+    advertise_address = os.environ.get('P2P_ADVERTISE_ADDR', f'127.0.0.1:{p2p_port}')
+    capabilities = [cap.strip() for cap in capabilities_csv.split(',') if cap.strip()]
+    services = [svc.strip() for svc in services_csv.split(',') if svc.strip()]
+    query_ttl_str = os.environ.get('P2P_QUERY_TTL', '3')
+    try:
+        query_ttl = int(query_ttl_str)
+    except ValueError:
+        query_ttl = 3
 
     # Define a simple wrapper around the orchestrator call.  When
     # broadcasting queries to peers we want to synchronously call
@@ -79,7 +91,16 @@ def main() -> None:
     # Instantiate and start the P2P network.  Store it in the module
     # level variable so the HTTP handlers can reference it.
     global p2p_network
-    p2p_network = P2PNetwork(p2p_port, bootstrap_peers, on_query)  # type: ignore
+    p2p_network = P2PNetwork(
+        p2p_port,
+        bootstrap_peers,
+        on_query,
+        mode=mode,
+        capabilities=capabilities,
+        services=services,
+        advertise_address=advertise_address,
+        query_ttl=query_ttl,
+    )  # type: ignore
     p2p_network.start()
 
     # Log startup information.
