@@ -53,3 +53,66 @@ Elmnet does not prescribe a single implementation; rather it outlines a set of c
 ## Conclusion
 
 Elmnet proposes a return to the cooperative ethos of the early internet. By giving everyone a personal LLM agent that can share knowledge, explore the network, and build communities, and by using standards like MCP to extend its reach into structured data, the protocol aims to cultivate a richer, more human‑centered web.
+
+## Proof of Concept (poc-1)
+
+The `poc-1` folder contains a runnable reference node that implements the Elmnet
+P2P and social protocol drafts. It exposes an HTTP API on port 8000 and a P2P
+socket listener on port 9000. The docker-compose setup launches three nodes
+connected in a local swarm so you can test query routing and peer discovery.
+
+### Run locally with Docker
+
+1. Build and start the services:
+
+   ```bash
+   cd poc-1
+   docker compose up --build
+   ```
+
+2. Query a node over HTTP:
+
+   ```bash
+   curl "http://localhost:8001/internal?query=What%20is%20Elmnet%3F"
+   ```
+
+3. Watch the logs to see the P2P handshake, peer list exchange, and query
+   propagation.
+
+### Run locally without Docker
+
+1. Install dependencies:
+
+   ```bash
+   cd poc-1
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+2. Start a node (repeat in multiple shells with different ports):
+
+   ```bash
+   export P2P_PORT=9000
+   export P2P_ADVERTISE_ADDR=127.0.0.1:9000
+   export BOOTSTRAP_PEERS=
+   python -m app.main
+   ```
+
+   For a second node:
+
+   ```bash
+   export P2P_PORT=9001
+   export P2P_ADVERTISE_ADDR=127.0.0.1:9001
+   export BOOTSTRAP_PEERS=127.0.0.1:9000
+   python -m app.main
+   ```
+
+### Test the POC
+
+Run the included unit tests for envelope signing and identity verification:
+
+```bash
+cd poc-1
+python -m unittest discover -s app/tests
+```

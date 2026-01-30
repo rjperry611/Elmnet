@@ -34,6 +34,9 @@ services:
       - ollama
     environment:
       - BOOTSTRAP_PEERS=
+      - ELMNET_MODE=local
+      - P2P_ADVERTISE_ADDR=node1:9000
+      - P2P_CAPABILITIES=kb,router
     ports:
       - "8001:8000"
       - "9001:9000"
@@ -47,6 +50,9 @@ services:
       - node1
     environment:
       - BOOTSTRAP_PEERS=node1:9000
+      - ELMNET_MODE=local
+      - P2P_ADVERTISE_ADDR=node2:9000
+      - P2P_CAPABILITIES=kb,router
     ports:
       - "8002:8000"
       - "9002:9000"
@@ -60,6 +66,9 @@ services:
       - node2
     environment:
       - BOOTSTRAP_PEERS=node1:9000,node2:9000
+      - ELMNET_MODE=local
+      - P2P_ADVERTISE_ADDR=node3:9000
+      - P2P_CAPABILITIES=kb,router
     ports:
       - "8003:8000"
       - "9003:9000"

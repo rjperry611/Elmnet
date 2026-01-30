@@ -27,9 +27,13 @@ services:
     depends_on:
       - ollama
     environment:
-      - WHOAMI=http://node1:8000
+      - BOOTSTRAP_PEERS=
+      - ELMNET_MODE=local
+      - P2P_ADVERTISE_ADDR=node1:9000
+      - P2P_CAPABILITIES=kb,router
     ports:
       - "8000:8000"
+      - "9000:9000"
     networks:
       - net1
   node2:
@@ -37,10 +41,13 @@ services:
     depends_on:
       - ollama
     environment:
-      - WHOAMI=http://node2:8000
-      - BOOTSTRAP_URL=http://node1:8000
+      - BOOTSTRAP_PEERS=node1:9000
+      - ELMNET_MODE=local
+      - P2P_ADVERTISE_ADDR=node2:9000
+      - P2P_CAPABILITIES=kb,router
     ports:
       - "8001:8000"
+      - "9001:9000"
     networks:
       - net1
   node3:
@@ -48,10 +55,13 @@ services:
     depends_on:
       - ollama
     environment:
-      - WHOAMI=http://node3:8000
-      - BOOTSTRAP_URL=http://node1:8000
+      - BOOTSTRAP_PEERS=node1:9000,node2:9000
+      - ELMNET_MODE=local
+      - P2P_ADVERTISE_ADDR=node3:9000
+      - P2P_CAPABILITIES=kb,router
     ports:
       - "8002:8000"
+      - "9002:9000"
     networks:
       - net1
   node4:
@@ -59,10 +69,13 @@ services:
     depends_on:
       - ollama
     environment:
-      - WHOAMI=http://node4:8000
-      - BOOTSTRAP_URL=http://node2:8000 # this one uses node2 as the bootstrap node
+      - BOOTSTRAP_PEERS=node2:9000
+      - ELMNET_MODE=local
+      - P2P_ADVERTISE_ADDR=node4:9000
+      - P2P_CAPABILITIES=kb,router
     ports:
       - "8003:8000"
+      - "9003:9000"
     networks:
       - net1
     
